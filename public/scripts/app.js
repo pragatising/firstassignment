@@ -163,22 +163,21 @@ function getForecastFromNetwork(coords) {
  */
 function getForecastFromCache(coords) {
   // CODELAB: Add code to get weather forecast from the caches object.
-  
   if (!('caches' in window)) {
-  return null;
-}
-const url = `${window.location.origin}/forecast/${coords}`;
-return caches.match(url)
-    .then((response) => {
-      if (response) {
-        return response.json();
-      }
-      return null;
-    })
-    .catch((err) => {
-      console.error('Error getting data from cache', err);
-      return null;
-    });
+    return null;
+  }
+  const url = `${window.location.origin}/forecast/${coords}`;
+  return caches.match(url)
+      .then((response) => {
+        if (response) {
+          return response.json();
+        }
+        return null;
+      })
+      .catch((err) => {
+        console.error('Error getting data from cache', err);
+        return null;
+      });
 
 }
 
@@ -213,9 +212,12 @@ function updateData() {
   Object.keys(weatherApp.selectedLocations).forEach((key) => {
     const location = weatherApp.selectedLocations[key];
     const card = getForecastCard(location);
-    // CODELAB: Add code to call getForecastFromCache
-    
-   
+    // CODELAB: Add code to call getForecastFromCache.
+    getForecastFromCache(location.geo)
+        .then((forecast) => {
+          renderForecast(card, forecast);
+        });
+
     // Get the forecast data from the network.
     getForecastFromNetwork(location.geo)
         .then((forecast) => {
@@ -249,9 +251,9 @@ function loadLocationList() {
     }
   }
   if (!locations || Object.keys(locations).length === 0) {
-    const key = '40.7720232,-73.9732319';
+    const key = localStorage.getItem('userLocation');
     locations = {};
-    locations[key] = {label: 'New York City', geo: '40.7720232,-73.9732319'};
+    locations[key] = {label: 'Current Location', geo: key};
   }
   return locations;
 }
@@ -261,10 +263,9 @@ function loadLocationList() {
  * renders the initial data.
  */
 function init() {
-  // Get the location list, and update the UI.
-  weatherApp.selectedLocations = loadLocationList();
-  updateData();
-
+  // Get user location and save then add current location to the list of cities to add. Then update UI
+  saveUserLocationThenUpdateUI();
+  
   // Set up the event handlers for all of the buttons.
   document.getElementById('butRefresh').addEventListener('click', updateData);
   document.getElementById('butAdd').addEventListener('click', toggleAddDialog);
@@ -274,4 +275,30 @@ function init() {
       .addEventListener('click', addLocation);
 }
 
+function saveUserLocationThenUpdateUI() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position){
+      localStorage.setItem('userLocation', position.coords.latitude + ',' + position.coords.longitude);
+      // Get the location list, and update the UI. --- According to acquired user location
+      addUserLocationToCityToAddList();
+      weatherApp.selectedLocations = loadLocationList();
+      updateData();
+    });
+  } else { 
+    //log err message
+    console.log("Geolocation is not supported by this browser.");
+    // Get the location list, and update the UI. --- According to previous user location
+    addUserLocationToCityToAddList();
+    weatherApp.selectedLocations = loadLocationList();
+    updateData();
+  }
+}
+
+function addUserLocationToCityToAddList() {
+  const cityToAddList = document.getElementById("selectCityToAdd");
+  const option = document.createElement("option");
+  option.value = localStorage.getItem('userLocation');
+  option.text = "Current Location";
+  cityToAddList.add(option, cityToAddList[0]);
+}
 init();

@@ -296,6 +296,8 @@ function saveUserLocationThenUpdateUI() {
 
 function addUserLocationToCityToAddList() {
   const cityToAddList = document.getElementById("selectCityToAdd");
+  const summary=document.getElementById("summary");
+  summary.text=localStorage.getItem('userLocation');
   const option = document.createElement("option");
   option.value = localStorage.getItem('userLocation');
   option.text = "Current Location";

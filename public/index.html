@@ -22,7 +22,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Weather PWA</title>
+  <title>Weather</title>
   <meta name="codelab" content="your-first-pwa-v3">
   <link rel="stylesheet" type="text/css" href="/styles/inline.css">
   <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
@@ -48,10 +48,8 @@
 
   <header class="header">
     <h1>
-      Weather PWA
-      <a href="https://darksky.net/poweredby/" class="powered-by">
-        Powered by Dark Sky
-      </a>
+      Weather
+      
     </h1>
     <button id="butInstall" aria-label="Install" hidden></button>
     <button id="butRefresh" aria-label="Refresh"></button>
@@ -64,8 +62,8 @@
     </button>
 
     <div id="about" class="weather-card">
-      <b>Your First Progressive Web App Codelab</b><br>
-      Get started at <a href="https://g.co/codelabs/pwa">https://g.co/codelabs/pwa</a>.
+      <b id="summary"></b>
+      
     </div>
 
     <div id="weather-template" class="weather-card" hidden>
